@@ -4,14 +4,16 @@ class Player
     @warrior = warrior
     @direction ||= has_captives_behind? ? :backward : :forward
     @previous_health ||= 20
+    @rest_until ||= 0
 
     if warrior.feel(@direction).empty?
-      if under_attack? && dying?
-        @warrior.walk!(:backward)
+      if targeted? && dying?
         @enemies_left = true
+        @rest_until = 12
+        @warrior.walk!(:backward)
       elsif can_shoot?
         @warrior.shoot!
-      elsif under_attack? || full_health? || !enemies_left?
+      elsif under_attack? || (can_survive_next_enemy? && @rest_until <= @warrior.health) || !enemies_left?
         @warrior.walk!(@direction)
       else
         @warrior.rest!
@@ -37,6 +39,28 @@ class Player
     vision = @warrior.look
     vision.delete_if {|s| !s.enemy?}
     @enemies_left || vision.any?
+  end
+
+  def can_survive_next_enemy?
+    vision = @warrior.look
+    vision.delete_if {|s| !s.enemy?}
+
+    if vision.any?
+      case vision.first.unit.name
+      when "Wizard"
+        true
+      when "Archer"
+        @warrior.health > 12
+      when "Thick Sludge"
+        @warrior.health > 12
+      when "Sludge"
+        @warrior.health > 6
+      else
+        true
+      end
+    else
+      true
+    end
   end
 
   def targeted?
