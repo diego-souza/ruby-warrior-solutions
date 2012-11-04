@@ -3,12 +3,10 @@ class Player
     @warrior = warrior
     @previous_health ||= 20
     if warrior.feel.empty?
-      if under_attack?
+      if under_attack? || full_health?
         @warrior.walk!
-      elsif !full_health?
-        @warrior.rest!
       else
-        @warrior.walk!
+        @warrior.rest!
       end
     else
       @warrior.attack!
