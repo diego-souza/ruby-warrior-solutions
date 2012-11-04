@@ -2,7 +2,7 @@ require 'pry'
 class Player
   def play_turn(warrior)
     @warrior = warrior
-    @direction ||= :backward
+    @direction ||= :forward
     @previous_health ||= 20
     if warrior.feel(@direction).empty?
       if under_attack? && dying?
