@@ -9,7 +9,11 @@ class Player
         @warrior.rest!
       end
     else
-      @warrior.attack!
+      if warrior.feel.captive?
+        @warrior.rescue!
+      else
+        @warrior.attack!
+      end
     end
     @previous_health = @warrior.health
   end
