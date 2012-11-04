@@ -2,7 +2,7 @@ require 'pry'
 class Player
   def play_turn(warrior)
     @warrior = warrior
-    @direction ||= :forward
+    @direction ||= has_captives_behind? ? :backward : :forward
     @previous_health ||= 20
     if warrior.feel(@direction).empty?
       if under_attack? && dying?
@@ -43,6 +43,12 @@ class Player
     vision = @warrior.look
     vision.delete_if {|s| s.empty?}
     vision.size > 0 && vision.first.unit.class == RubyWarrior::Units::Wizard
-    vision.size > 0 && vision.first.enemy?
+    #vision.size > 0 && vision.first.enemy?
+  end
+
+  def has_captives_behind?
+    vision = @warrior.look(:backward)
+    vision.delete_if {|s| !s.captive?}
+    vision.size > 0
   end
 end
