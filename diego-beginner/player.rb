@@ -1,16 +1,20 @@
 class Player
   def play_turn(warrior)
     @warrior = warrior
+    @direction ||= :backward
     @previous_health ||= 20
-    if warrior.feel.empty?
-      if under_attack? || full_health?
-        @warrior.walk!
+    if warrior.feel(@direction).empty?
+      if under_attack? && dying?
+        @warrior.walk!(:backward)
+      elsif under_attack? || full_health?
+        @warrior.walk!(@direction)
       else
         @warrior.rest!
       end
     else
-      if warrior.feel.captive?
-        @warrior.rescue!
+      if warrior.feel(@direction).captive?
+        @warrior.rescue!(@direction)
+        @direction = :forward
       else
         @warrior.attack!
       end
@@ -24,5 +28,9 @@ class Player
 
   def under_attack?
     @warrior.health < @previous_health
+  end
+
+  def dying?
+    @warrior.health < 7
   end
 end
