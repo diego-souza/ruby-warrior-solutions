@@ -7,7 +7,7 @@ class Player
     if warrior.feel(@direction).empty?
       if under_attack? && dying?
         @warrior.walk!(:backward)
-      elsif can_shoot?
+      elsif !under_attack? && can_shoot?
         @warrior.shoot!
       elsif under_attack? || full_health?
         @warrior.walk!(@direction)
@@ -43,5 +43,6 @@ class Player
     vision = @warrior.look
     vision.delete_if {|s| s.empty?}
     vision.size > 0 && vision.first.unit.class == RubyWarrior::Units::Wizard
+    vision.size > 0 && vision.first.enemy?
   end
 end
